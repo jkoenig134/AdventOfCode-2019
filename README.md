@@ -18,7 +18,7 @@ The input file is the one you receive from the challenge website. If no value is
 
 - Click "Fork" in this repository and fork it into your account
 
-- In your terminal, run `git clone https://github.com/jkoenig134/AdventOfCode-2019.git`
+- In your terminal, run `git clone https://github.com/<yourname>/AdventOfCode-2019.git`
 
 - Choose your language and make a directory with its name - if there already is a directory for the language, name it differently (for example "java2" if "java" already exists)
 
