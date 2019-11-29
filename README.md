@@ -37,7 +37,7 @@ java %1 %2
 
 - To keep it structured, use a different file for each day.
 
-- Open a Pull Request whenever you want; make sure [your fork is up to date]([https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork)
+- Open a Pull Request whenever you want; make sure [your fork is up to date](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork)
 
 
 
