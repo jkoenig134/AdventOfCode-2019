@@ -26,7 +26,7 @@ The input file is the one you receive from the challenge website. If no value is
 
 ```java
 :: %1 is the first argument, e.g. "DayOne"
-set file_name = %1.java
+set file_name=%1.java
 :: compile the code
 javac %file_name%
 :: run the code - %2 is the input file
