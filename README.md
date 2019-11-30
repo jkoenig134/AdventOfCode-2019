@@ -31,6 +31,8 @@ javac %file_name%
 java %1 %2
 ```
 
+- Add a readme to your directory depicting the requirements to run your script.
+
 - Write your script in a way that is compatible with the naming convention ("Day01", "Day02", ...)
 
 - To keep it structured, use a different file for each day.
