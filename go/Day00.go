@@ -6,22 +6,19 @@ import (
 	"os"
 )
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
 func main() {
 	// use filepath from os args
 	filepath := os.Args[1]
 
 	// read file
-	file, err := ioutil.ReadFile(filepath)
-	check(err)
+	if file, err := ioutil.ReadFile(filepath); err == nil {
+		// file content to string
+		content := string(file)
 
-	// file content to string
-	content := string(file)
+		// use file content
+		fmt.Println(content)
+	} else {
+		fmt.Printf("File not found for path \"%s\"\n", filepath)
+	}
 
-	fmt.Println(content)
 }
