@@ -3,14 +3,14 @@
 (defn calc-fuel [mass]
   (- (quot mass 3) 2))
 
-(defn fuels [masses]
-  (filter pos? (map calc-fuel masses)))
+(defn calc-recursive-fuel [mass]
+  (apply + (take-while pos? (drop 1 (iterate calc-fuel mass)))))
 
 (defn simple-fuel [masses]
-  (apply + (fuels masses)))
+  (apply + (map calc-fuel masses)))
 
 (defn recursive-fuel [masses]
-  (apply + (apply concat (take-while seq (drop 1 (iterate fuels masses))))))
+  (apply + (map calc-recursive-fuel masses)))
 
 (defn read-ints [file-path]
   (with-open [reader (clojure.java.io/reader file-path)]
