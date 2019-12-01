@@ -10,10 +10,7 @@
   (apply + (fuels masses)))
 
 (defn recursive-fuel [masses]
-  (if (empty? masses)
-    0
-    (let [fuels (fuels masses)]
-      (+ (apply + fuels) (recursive-fuel fuels)))))
+  (apply + (apply concat (take-while seq (drop 1 (iterate fuels masses))))))
 
 (defn read-ints [file-path]
   (with-open [reader (clojure.java.io/reader file-path)]
