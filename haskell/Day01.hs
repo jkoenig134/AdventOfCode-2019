@@ -12,7 +12,19 @@ toInt = map read
 
 -- Solve the problem by simple calculations
 solve :: [Int] -> Int
-solve list = sum (map (\x -> x `div` 3 - 2) list)
+solve list = sum (map calculateFuel list)
+
+solve2 :: [Int] -> Int
+solve2 list = sum (map calculateExtendendFuel list)
+
+calculateExtendendFuel :: Int -> Int
+calculateExtendendFuel mass = if fuel <= 0 then 0 else fuel + (calculateExtendendFuel fuel)
+  where
+    fuel = calculateFuel mass
+
+-- Calculate the fuel by mass
+calculateFuel :: Int -> Int
+calculateFuel mass = mass `div` 3 - 2
 
 -- Run the main with file input argument
 main = do
@@ -21,4 +33,7 @@ main = do
   let result = solve $ toInt lines
   putStr "Sum of fuel requirements is "
   print result
+  let result2 = solve2 $ toInt lines
+  putStr "Extended sum of fuel requirements is "
+  print result2
   return result
