@@ -6,7 +6,9 @@ A repository of solutions for the [AdventOfCode](https://adventofcode.com/) chal
 
 In your terminal, run `solve <language> <day> <path-to-input-file>`. The following languages are available so far:
 
-- .
+- Clojure
+- Go
+- Haskell
 
 For `day`, input `Day01`, `Day02` etc.
 
