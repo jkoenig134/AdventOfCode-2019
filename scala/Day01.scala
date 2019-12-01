@@ -1,5 +1,7 @@
 import java.io.FileNotFoundException
 
+import Day01.fuelForModule
+
 import scala.io.Source
 
 object Day01 {
@@ -17,21 +19,11 @@ object Day01 {
     println("Solution Part 2: " + fuelForAllModulesRecursive(lines, 0, 0))
   }
 
-  def fuelForAllModules(lines: List[String], index: Int, all: Int): Int = {
-    if (lines.length == index) {
-      return all
-    }
-    fuelForAllModules(lines, index + 1, all + fuelForModule(lines(index).toInt))
-  }
+  def fuelForAllModules(lines: List[String], index: Int, all: Int): Int = if (lines.length == index) all else fuelForAllModules(lines, index + 1, all + fuelForModule(lines(index).toInt))
 
   def fuelForModule(mass: Int) = (Math.floor(mass / 3) - 2).toInt
 
-  def fuelForAllModulesRecursive(lines: List[String], index: Int, all: Int): Int = {
-    if (lines.length == index) {
-      return all
-    }
-    fuelForAllModulesRecursive(lines, index + 1, all + fuelForModuleRecursive(lines(index).toInt, 0))
-  }
+  def fuelForAllModulesRecursive(lines: List[String], index: Int, all: Int): Int = if (lines.length == index) all else fuelForAllModulesRecursive(lines, index + 1, all + fuelForModuleRecursive(lines(index).toInt, 0))
 
   def fuelForModuleRecursive(mass: Int, all: Int): Int = {
     val fuel = (Math.floor(mass / 3) - 2).toInt
