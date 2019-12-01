@@ -13,7 +13,8 @@ object Day01 {
       return
     }
 
-    println("Required fuel for all modules: " + fuelForAllModules(lines, 0, 0))
+    println("Solution Part 1: " + fuelForAllModules(lines, 0, 0))
+    println("Solution Part 2: " + fuelForAllModulesRecursive(lines, 0, 0))
   }
 
   def fuelForAllModules(lines: List[String], index: Int, all: Int): Int = {
@@ -24,6 +25,21 @@ object Day01 {
   }
 
   def fuelForModule(mass: Int) = (Math.floor(mass / 3) - 2).toInt
+
+  def fuelForAllModulesRecursive(lines: List[String], index: Int, all: Int): Int = {
+    if (lines.length == index) {
+      return all
+    }
+    fuelForAllModulesRecursive(lines, index + 1, all + fuelForModuleRecursive(lines(index).toInt, 0))
+  }
+
+  def fuelForModuleRecursive(mass: Int, all: Int): Int = {
+    val fuel = (Math.floor(mass / 3) - 2).toInt
+    if (fuel <= 0) {
+      return all
+    }
+    fuelForModuleRecursive(fuel, all + fuel)
+  }
 
   def readFile(file: String): List[String] = {
     try {
