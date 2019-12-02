@@ -17,6 +17,10 @@ readLine = readFile
 toInt :: [[Char]] -> [Int]
 toInt = map read
 
+-- Convert a single line to a int list
+toIntList :: String -> [Int]
+toIntList parse = read ("[" ++ parse ++ "]")
+
 -- Run the solve method by providing a description and input type
 solve :: (Show t) => String -> Input -> (Input -> t) -> IO ()
 solve desc input solver = do
