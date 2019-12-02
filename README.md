@@ -12,6 +12,7 @@ In your terminal, run `solve <language> <day> <path-to-input-file>`. The followi
 -   Scala
 -   Java
 -   Kotlin
+-   NodeJS
 
 For `day`, input `Day01`, `Day02` etc.
 
