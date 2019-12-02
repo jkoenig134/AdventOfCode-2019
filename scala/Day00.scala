@@ -23,6 +23,6 @@ object Day00 {
         println("The provided input file could not be found. Please check the path to the file.")
       }
     }
-    return List.empty
+    List.empty
   }
 }

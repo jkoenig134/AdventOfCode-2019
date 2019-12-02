@@ -9,6 +9,8 @@ In your terminal, run `solve <language> <day> <path-to-input-file>`. The followi
 - Clojure
 - Go
 - Haskell
+- Scala
+- Java
 
 For `day`, input `Day01`, `Day02` etc.
 
