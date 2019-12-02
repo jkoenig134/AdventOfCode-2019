@@ -1,45 +1,39 @@
-import java.io.FileNotFoundException
-
-import Day01.fuelForModule
-
 import scala.io.Source
 
 object Day01 {
+
   def main(args: Array[String]): Unit = {
-    if (args.length != 1) {
-      println("Please provide the path of the input file as argument")
-      return
-    }
-    val lines = readFile(args(0))
-    if (lines.isEmpty) {
-      return
-    }
+    val source = Source.fromFile(args(0))
+    val masses = source.getLines.map(l => l.toInt).toList
 
-    println("Solution Part 1: " + fuelForAllModules(lines, 0, 0))
-    println("Solution Part 2: " + fuelForAllModulesRecursive(lines, 0, 0))
+    println(masses.map(fuelForMass).sum)
+    println(masses.map(fuelForMassAndFuel).sum)
+
+    source.close()
   }
 
-  def fuelForAllModules(lines: List[String], index: Int, all: Int): Int = if (lines.length == index) all else fuelForAllModules(lines, index + 1, all + fuelForModule(lines(index).toInt))
+  /**
+   * Calculate the required fuel for the given mass.
+   *
+   * @param mass the given mass
+   * @return the required fuel
+   */
+  def fuelForMass(mass: Int): Int = (Math.floor(mass / 3) - 2).toInt
 
-  def fuelForModule(mass: Int) = (Math.floor(mass / 3) - 2).toInt
-
-  def fuelForAllModulesRecursive(lines: List[String], index: Int, all: Int): Int = if (lines.length == index) all else fuelForAllModulesRecursive(lines, index + 1, all + fuelForModuleRecursive(lines(index).toInt, 0))
-
-  def fuelForModuleRecursive(mass: Int, all: Int): Int = {
-    val fuel = (Math.floor(mass / 3) - 2).toInt
-    if (fuel <= 0) {
-      return all
+  /**
+   * Calculate the required fuel for the given mass.
+   * We also add the required fuel for the mass of the fuel.
+   *
+   * @param mass the given mass
+   * @return the required fuel
+   */
+  def fuelForMassAndFuel(mass: Int): Int = {
+    var requiredFuelAll = 0
+    var requiredFuel = fuelForMass(mass)
+    while (requiredFuel > 0) {
+      requiredFuelAll += requiredFuel
+      requiredFuel = fuelForMass(requiredFuel)
     }
-    fuelForModuleRecursive(fuel, all + fuel)
-  }
-
-  def readFile(file: String): List[String] = {
-    try {
-      return Source.fromFile(file).getLines.toList
-    } catch {
-      case e: FileNotFoundException =>
-        println("The provided input file could not be found. Please check the path to the file.")
-    }
-    List.empty
+    requiredFuelAll
   }
 }
