@@ -18,6 +18,12 @@ execute codes offset
 set :: [t] -> Int -> t -> [t]
 set list idx val = (take (idx) list) ++ [val] ++ (drop (idx+1) list)
 
+force :: [Int] -> Int -> Int -> Int
+force codes noun verb = head $ execute (modify codes) 0
+  where modify codes = set (set codes 1 noun) 2 verb
+
+test codes = [(a,b) | a <- [0..99], b <- [0..99], (force codes a b) == 19690720]
+
 {- Handle input and solve executions -}
 
 -- Solve first challenge
@@ -28,6 +34,11 @@ solve1 (Line (Just line)) = head $ execute (modify (toIntList line)) 0
 toIntList :: String -> [Int]
 toIntList parse = read ("[" ++ parse ++ "]")
 
+-- Solve second challenge
+solve2 :: Input -> [(Int, Int)]
+solve2 (Line (Just line)) = test (toIntList line)
+
 -- Print challenge result
 main = do
   solve "First entry after execution" (Line Nothing) (solve1)
+  solve "List of nouns and verbs" (Line Nothing) (solve2)
