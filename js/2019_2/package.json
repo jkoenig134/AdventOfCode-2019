@@ -1,0 +1,14 @@
+{
+  "name": "2019_2",
+  "version": "1.0.0",
+  "description": "AdventOfCode Day 2",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "author": "Weiiswurst",
+  "license": "ISC",
+  "dependencies": {
+    "buffered-reader": "^1.0.1"
+  }
+}
