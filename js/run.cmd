@@ -1,3 +1,1 @@
-cd 2019_%1
-node index.js %2
-cd ..
+npm install && node %1.js %2

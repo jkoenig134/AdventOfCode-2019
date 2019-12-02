@@ -1,7 +1,7 @@
 {
-  "name": "2019_2",
+  "name": "adventofcode",
   "version": "1.0.0",
-  "description": "AdventOfCode Day 2",
+  "description": "AdventOfCode",
   "main": "index.js",
   "scripts": {
     "test": "node index.js"
