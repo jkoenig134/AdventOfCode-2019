@@ -1,22 +1,16 @@
 module Main where
 
-import System.Environment
+import Common
 
--- Read a file by it's name line by line
-readLines :: FilePath -> IO [String]
-readLines = fmap lines . readFile
+-- Calculate the fuel for a list of masses
+sumFuel :: [Int] -> Int
+sumFuel list = sum (map calculateFuel list)
 
--- Convert a list of string to a list of ints
-toInt :: [[Char]] -> [Int]
-toInt = map read
+-- Calculate the extended fuel for a list of masses
+sumExtendedFuel :: [Int] -> Int
+sumExtendedFuel list = sum (map calculateExtendendFuel list)
 
--- Solve the problem by simple calculations
-solve :: [Int] -> Int
-solve list = sum (map calculateFuel list)
-
-solve2 :: [Int] -> Int
-solve2 list = sum (map calculateExtendendFuel list)
-
+-- Calculate the fuel by mass (and fuel mass,...)
 calculateExtendendFuel :: Int -> Int
 calculateExtendendFuel mass = if fuel <= 0 then 0 else fuel + (calculateExtendendFuel fuel)
   where
@@ -26,14 +20,17 @@ calculateExtendendFuel mass = if fuel <= 0 then 0 else fuel + (calculateExtenden
 calculateFuel :: Int -> Int
 calculateFuel mass = mass `div` 3 - 2
 
--- Run the main with file input argument
+{- Handle input and solve executions -}
+
+-- Solve first challenge
+solve1 :: Input -> Int
+solve1 (Lines (Just list)) = sumFuel $ toInt list
+
+-- Solve second challenge
+solve2 :: Input -> Int
+solve2 (Lines (Just list)) = sumExtendedFuel $ toInt list
+
+-- Print challenge result
 main = do
-  x <- getArgs
-  lines <- readLines $ head x
-  let result = solve $ toInt lines
-  putStr "Sum of fuel requirements is "
-  print result
-  let result2 = solve2 $ toInt lines
-  putStr "Extended sum of fuel requirements is "
-  print result2
-  return result
+  solve "Sum of fuel requirements" (Lines Nothing) (solve1)
+  solve "Sum of extended fuel requirements" (Lines Nothing) (solve2)
