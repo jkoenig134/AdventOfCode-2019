@@ -3,7 +3,7 @@ const BufferedReader = require("buffered-reader").DataReader;
 const args = process.argv.slice(2);
 
 let fileName = args[0]
-if(!fileName) fileName = "input.txt"
+if(!fileName) fileName = "../input/Day02.txt"
 
 
 let data = [];
