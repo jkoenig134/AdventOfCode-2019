@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -13,7 +14,7 @@ func main() {
 	// read file
 	if file, err := ioutil.ReadFile(filepath); err == nil {
 		// file content to string
-		content := string(file)
+		content := strings.Split(string(file), "\n")
 
 		// use file content
 		fmt.Println(content)
