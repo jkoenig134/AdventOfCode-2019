@@ -15,6 +15,11 @@ split :: String -> Char -> [String]
 split [] c = []
 split list c = first : split (drop ((length first) + 1) list) c
   where first = takeWhile (/= c) list
+  
+idxByVal :: (Eq t) => [t] -> t -> Int
+idxByVal [] val = error "value not found"
+idxByVal (x:xs) val = search (x:xs) 0
+  where search (x:xs) idx = if x == val then idx else search xs (idx + 1)
 
 apply :: Point -> Wire -> [Point]
 apply (a,b) (L dist) = [(a - i, b) | i <- [1..dist]]
@@ -31,7 +36,8 @@ add (a,b) (x,y) = (a+x, b+y)
 points :: [Wire] -> Point -> [Point]
 points [] prev = []
 points [wire] prev = apply prev wire
-points (wire:xs) prev = (apply prev wire) ++ (points xs (last ((apply prev wire) )))
+points (wire:xs) prev = calculated ++ (points xs (last calculated))
+  where calculated = apply prev wire
 
 intersect :: [Wire] -> [Wire] -> [Point]
 intersect a b = [(x,y) | (x,y) <- pointsA, contains pointsB (x,y)]
@@ -53,6 +59,11 @@ intersect a b = [(x,y) | (x,y) <- pointsA, contains pointsB (x,y)]
 calcManhattenDist :: [Wire] -> [Wire] -> Int
 calcManhattenDist wireA wireB = minimum $ map (dist (0,0)) (intersect wireA wireB)
 
+calcSteps :: [Wire] -> [Wire] -> Int
+calcSteps wireA wireB = minimum (map calc (intersect wireA wireB))
+  where
+    calc point = (idxByVal (points wireA (0,0)) point) + (idxByVal (points wireB (0,0)) point) + 2
+
 {- Handle input and solve executions -}
 
 -- Solve first challenge
@@ -67,9 +78,15 @@ solve1 (Lines (Just lines)) = calcManhattenDist wireA wireB
 
 -- Solve second challenge
 solve2 :: Input -> Int
-solve2 (Line (Just line)) = 5
+solve2 (Lines (Just lines)) = calcSteps wireA wireB
+  where
+    wireA :: [Wire]
+    wireA = map parseWire (split (lines !! 0) ',')
+    
+    wireB :: [Wire]
+    wireB = map parseWire (split (lines !! 1) ',')
 
 -- Print challenge result
 main = do
   solve "Manhatten distance" (Lines Nothing) (solve1)
-  solve "TODO" (Line Nothing) (solve2)
+  solve "Steps to intersection" (Lines Nothing) (solve2)
