@@ -1,0 +1,14 @@
+{
+  "name": "adventofcode",
+  "version": "1.0.0",
+  "description": "AdventOfCode",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "author": "Weiiswurst",
+  "license": "ISC",
+  "dependencies": {
+    "buffered-reader": "^1.0.1"
+  }
+}

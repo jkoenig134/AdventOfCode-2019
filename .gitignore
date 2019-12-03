@@ -2,3 +2,4 @@ input/*
 .idea/*
 lib/*
 .vscode/*
+node_modules

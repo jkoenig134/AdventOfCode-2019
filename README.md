@@ -6,11 +6,13 @@ A repository of solutions for the [AdventOfCode](https://adventofcode.com/) chal
 
 In your terminal, run `solve <language> <day> <path-to-input-file>`. The following languages are available so far:
 
-- Clojure
-- Go
-- Haskell
-- Scala
-- Java
+-   Clojure
+-   Go
+-   Haskell
+-   Scala
+-   Java
+-   Kotlin
+-   NodeJS
 
 For `day`, input `Day01`, `Day02` etc.
 
@@ -18,13 +20,13 @@ The input file is the one you receive from the challenge website. If no value is
 
 ## How to contribute
 
-- Click "Fork" in this repository and fork it into your account
+-   Click "Fork" in this repository and fork it into your account
 
-- In your terminal, run `git clone https://github.com/<yourname>/AdventOfCode-2019.git`
+-   In your terminal, run `git clone https://github.com/<yourname>/AdventOfCode-2019.git`
 
-- Choose your language and make a directory with its name - if there already is a directory for the language, name it differently (for example "java2" if "java" already exists)
+-   Choose your language and make a directory with its name - if there already is a directory for the language, name it differently (for example "java2" if "java" already exists)
 
-- Place a "run.bat" and "run.sh" file in the newly created directory and write a script that takes the day that ought to be solved and the input file as a command parameter input and executes whatever action is required to run your solutions. For example, this is what this script for java might look like (batch):
+-   Place a "run.bat" and "run.sh" file in the newly created directory and write a script that takes the day that ought to be solved and the input file as a command parameter input and executes whatever action is required to run your solutions. For example, this is what this script for java might look like (batch):
 
 ```java
 :: %1 is the first argument, e.g. "Day01"
@@ -35,10 +37,10 @@ javac %file_name%
 java %1 %2
 ```
 
-- Add a readme to your directory depicting the requirements to run your script.
+-   Add a readme to your directory depicting the requirements to run your script.
 
-- Write your script in a way that is compatible with the naming convention ("Day01", "Day02", ...)
+-   Write your script in a way that is compatible with the naming convention ("Day01", "Day02", ...)
 
-- To keep it structured, use a different file for each day.
+-   To keep it structured, use a different file for each day.
 
-- Open a Pull Request whenever you want; make sure [your fork is up to date](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork)
+-   Open a Pull Request whenever you want; make sure [your fork is up to date](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork)
