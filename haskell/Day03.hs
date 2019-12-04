@@ -12,12 +12,6 @@ parseWire ('R':dist) = R (read dist)
 parseWire ('D':dist) = D (read dist)
 parseWire ('U':dist) = U (read dist)
 
--- Split a string by a deliminator
-split :: String -> Char -> [String]
-split []   c = []
-split list c = first : split (drop ((length first) + 1) list) c
-  where first = takeWhile (/= c) list
-
 -- Get the index by value from list
 idxByVal :: (Eq t) => [t] -> t -> Int
 idxByVal []     val = error "value not found"
@@ -92,5 +86,5 @@ solve2 (Lines (Just lines)) = calcSteps wireA wireB
 
 -- Print challenge result
 main = do
-  solve "Manhatten distance"    (Lines Nothing) (solve1)
+  solve "Manhatten distance" (Lines Nothing) (solve1)
   solve "Steps to intersection" (Lines Nothing) (solve2)
