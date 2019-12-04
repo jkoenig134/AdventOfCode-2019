@@ -20,12 +20,7 @@ validate2 number = validate number && elem True (map (containsTwo digits') digit
 
 -- Run the validation function between a given range
 run :: Int -> Int -> (Int -> Bool) -> Int
-run from to func = helpRun from 0
-  where
-    helpRun current sum
-      | current == to = sum
-      | func current  = helpRun (current + 1) (sum + 1)
-      | otherwise     = helpRun (current + 1) sum
+run from to func = length (filter func [from..to])
 
 -- Get the list of digits from a number a
 digits :: Int -> Int -> [Int]
