@@ -2,8 +2,6 @@ module Main where
 
 import Common
 
--- 1 2 3 4 5 6
-
 validate :: Int -> Bool
 validate number = size && increase number 100000 False
   where
@@ -21,12 +19,19 @@ run from to = helpRun from 0
       | current == to = sum
       | validate current = helpRun (current + 1) (sum + 1)
       |otherwise = helpRun (current + 1) sum
+
+-- Split a string by a deliminator
+split :: String -> Char -> [String]
+split []   c = []
+split list c = first : split (drop ((length first) + 1) list) c
+  where first = takeWhile (/= c) list
     
 {- Handle input and solve executions -}
 
 -- Solve first challenge
 solve1 :: Input -> Int
-solve1 (Lines (Just lines)) = 5
+solve1 (Line (Just line)) = run (read (splitted !! 0)) (read (splitted !! 1))
+  where splitted = split line '-'
 
 -- Solve second challenge
 solve2 :: Input -> Int
@@ -34,5 +39,5 @@ solve2 (Lines (Just lines)) = 5
 
 -- Print challenge result
 main = do
-  solve "TODO" (Lines Nothing) (solve1)
+  solve "Amount of different passwords" (Line Nothing) (solve1)
   solve "TODO" (Lines Nothing) (solve2)
