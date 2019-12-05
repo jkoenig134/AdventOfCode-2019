@@ -21,6 +21,12 @@ toInt = map read
 toIntList :: String -> [Int]
 toIntList parse = read ("[" ++ parse ++ "]")
 
+-- Split a string by a deliminator
+split :: String -> Char -> [String]
+split []   c = []
+split list c = first : split (drop ((length first) + 1) list) c
+  where first = takeWhile (/= c) list
+
 -- Run the solve method by providing a description and input type
 solve :: (Show t) => String -> Input -> (Input -> t) -> IO ()
 solve desc input solver = do
