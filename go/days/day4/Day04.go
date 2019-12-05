@@ -1,11 +1,11 @@
-package main
+package day4
 
 import (
 	"fmt"
 	"strconv"
 )
 
-func main() {
+func Execute() {
 	fmt.Printf("111111 should be true: %v\n", checkCode(111111, true))
 	fmt.Printf("223450 should be false: %v\n", checkCode(223450, true))
 	fmt.Printf("123789 should be false: %v\n", checkCode(123789, true))

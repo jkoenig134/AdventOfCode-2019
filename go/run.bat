@@ -1,2 +1,1 @@
-set file_name=%1.go
-go run %file_name% %2
+go run runner.go %1 %2
