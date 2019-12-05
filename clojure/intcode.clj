@@ -1,22 +1,50 @@
 ; common ops for day 2 and 5
 (ns intcode)
 
-; Returns a function to be used as an opcode-operator. takes *params* parameters,
-; applies the given function to them and returns a new state with updated memory and pointer.
-(defn memory-change-opcode [function params]
+; The terminal opcode (terminates the process)
+(def terminal-opcode
+  {:operator    (fn [process-state & _]
+                  (assoc process-state :terminated true))
+   :params      0
+   :destination false})
+
+; Returns an opcode that takes *param-amount* parameters, applies the given function to them
+; and returns a new state with updated memory and pointer.
+(defn memory-change-opcode [function param-amount]
   {:operator    (fn [process-state destination & params]
                   (update
                     (assoc-in process-state [:memory destination] (apply function params))
                     :pointer (partial + (count params) 2)))
-   :params      params
+   :params      param-amount
    :destination true})
 
-; Resolves a raw opcode (including parameter type ids) to an opcode from the given opcode-map
+; Returns an opcode that takes *param-amount* parameters, applies the given function to them
+; (presumably for side-effects) and returns a new state with an updated pointer.
+(defn side-effect-opcode [function param-amount]
+  {:operator    (fn [process-state & params]
+                  (do
+                    (apply function params)
+                    (update process-state :pointer (partial + param-amount 1))))
+   :params      param-amount
+   :destination false})
+
+; Returns an opcode that takes two parameters, applies the given function to the first one
+; and sets the process's pointer to the second one if the former returns a truthful value.
+; Otherwise updates the pointer as usual.
+(defn goto-opcode [test-fn]
+  {:operator    (fn [process-state value position]
+                  (if (test-fn value)
+                    (assoc process-state :pointer position)
+                    (update process-state :pointer (partial + 3))))
+   :params      2
+   :destination false})
+
+; Resolves a raw opcode (including parameter modes) to an opcode from the given opcode-map
 ; and the parameter type ids.
 (defn resolve-opcode [opcode opcode-map]
   (let [opcode-id (rem opcode 100)
         digits (map #(rem % 10) (drop 2 (iterate #(quot % 10) opcode)))]
-    (assoc (opcode-map opcode-id) :param-type-ids digits)))
+    (assoc (opcode-map opcode-id) :param-modes digits)))
 
 ; Processes a vector of memory values via the given algorithm.
 ; (if process is in state "terminated", return memory; else, resolve opcode at pointer using opcode-map,
@@ -30,7 +58,7 @@
           opcode (resolve-opcode (memory pointer) opcode-map)
           operator (:operator opcode)
           params (:params opcode)
-          parameters (map #((param-modes %1) memory %2) (:param-type-ids opcode) (range (inc pointer) (+ pointer params 1)))]
+          parameters (map #((param-modes %1) memory %2) (:param-modes opcode) (range (inc pointer) (+ pointer params 1)))]
       (recur (apply operator process-state (if (:destination opcode) (conj parameters (memory (+ pointer params 1))) parameters))
              opcode-map param-modes))))
 
@@ -46,30 +74,6 @@
                :when (= result (run (assoc memory 1 noun 2 verb) opcode-map param-modes))]
            (+ (* 100 noun) verb))))
 
-; Reads a file, splits at comma and new line, parses the results to integers and returns that as a vector
-(defn read-intcodes [file-path]
-  (vec (map #(Integer/parseInt %) (.split #",|\n" (slurp file-path)))))
-
-; The parameter modes used in day 2
-(def day2-param-modes
-  {0 (fn [memory pointer] (memory (memory pointer)))})
-
-; The opcodes used in day 2
-(def day2-opcode-map
-  {1  (memory-change-opcode + 2)
-   2  (memory-change-opcode * 2)
-   99 {:operator    (fn [process-state & _] (assoc process-state :terminated true))
-       :params      0
-       :destination false}})
-
-; The opcodes used in day 5
-(def day5-opcode-map
-  (assoc day2-opcode-map
-    3 (memory-change-opcode (constantly 1) 0)
-    4 {:operator (fn [process-state param] (do (println param) process-state))
-       :params 1
-       :destination false}))
-
-; The parameter modes used in day 2
-(def day5-param-modes
-  (assoc day2-param-modes 1 nth))
+; Splits the given string at comma and new line, parses the results to integers and returns that as a vector
+(defn parse-intcodes [raw]
+  (vec (map #(Integer/parseInt %) (.split #",|\n" raw))))
