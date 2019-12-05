@@ -6,10 +6,9 @@ var amountPart2 = 0
 
 fun main(args: Array<String>) {
     if(args.isEmpty()) {
-        //return
+        return
     }
-    //readFourthInput(args)
-    findSolutions(125730, 579381)
+    readFourthInput(args)
     println("Amount of solutions / Part 1: $amountPart1")
     println("Amount of solutions / Part 2: $amountPart2")
 }
