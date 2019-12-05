@@ -1,8 +1,7 @@
-package main
+package day3
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
@@ -16,24 +15,20 @@ type Distance struct {
 	wayFromFirst, wayFromSecond int
 }
 
-func main() {
+func Execute(fileContent *string) {
 	// draw(strings.Split("R8,U5,L5,D3\nU7,R6,D4,L4", "\n")) //6 | 30
 	// draw(strings.Split("R75,D30,R83,U83,L12,D49,R71,U7,L72\nU62,R66,U55,R34,D71,R55,D58,R83", "\n")) //159 | 610 -> Fails but is correct!?
 	// draw(strings.Split("R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51\nU98,R91,D20,R16,D67,R40,U7,R15,U6,R7", "\n")) //135 | 410
 
-	// use filepath from os args
-	filepath := os.Args[1]
-
-	// read file
-	if file, err := ioutil.ReadFile(filepath); err == nil {
-		// file content to string
-		content := strings.Split(string(file), "\n")
-
-		// use file content
-		draw(content)
-	} else {
-		fmt.Printf("File not found for path \"%s\"\n", filepath)
+	if fileContent == nil {
+		panic("File not found.")
 	}
+
+	// file content to string
+	content := strings.Split(*fileContent, "\n")
+
+	// use file content
+	draw(content)
 }
 
 func draw(lines []string) {

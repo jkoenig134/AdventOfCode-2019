@@ -22,12 +22,6 @@ validate2 number = validate number && elem True (map (containsTwo digits') digit
 run :: Int -> Int -> (Int -> Bool) -> Int
 run from to func = length (filter func [from..to])
 
--- Get the list of digits from a number a
-digits :: Int -> Int -> [Int]
-digits a 0 = []
-digits a length = digit : digits (a - (digit * 10^ (length - 1))) (length - 1)
-  where digit = a `div` (10 ^ (length - 1))
-
 -- Check if a list contains 2 times the same element
 containsTwo :: (Eq t) => [t] -> t -> Bool
 containsTwo list t = (helper list 0) == 2

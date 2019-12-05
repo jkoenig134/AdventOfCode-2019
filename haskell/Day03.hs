@@ -12,12 +12,6 @@ parseWire ('R':dist) = R (read dist)
 parseWire ('D':dist) = D (read dist)
 parseWire ('U':dist) = U (read dist)
 
--- Get the index by value from list
-idxByVal :: (Eq t) => [t] -> t -> Int
-idxByVal []     val = error "value not found"
-idxByVal (x:xs) val = search (x:xs) 0
-  where search (x:xs) idx = if x == val then idx else search xs (idx + 1)
-
 -- Apply the wire to a start point to get all points that got covered by the wire
 apply :: Point -> Wire -> [Point]
 apply (a,b) (L dist) = [(a - i, b) | i <- [1..dist]]
@@ -38,19 +32,10 @@ points (wire:xs) prev = calculated ++ (points xs (last calculated))
 
 -- Get the intersection points by two wires
 intersect :: [Wire] -> [Wire] -> [Point]
-intersect a b = [(x,y) | (x,y) <- pointsA, contains pointsB (x,y)]
+intersect a b = [(x,y) | (x,y) <- pointsA, elem (x,y) pointsB]
   where
     pointsA = points a (0,0)
     pointsB = points b (0,0)
-    
-    contains :: (Eq t) => [t] -> t -> Bool
-    contains []     val = False
-    contains (x:xs) val = if (x == val) then True else (contains xs val)
-
-    last :: [t] -> t
-    last []     = error "empty list"
-    last [a]    = a
-    last (x:xs) = last xs
 
 -- Calculate the smallest Manhatten distance of all intersections
 calcManhattenDist :: [Wire] -> [Wire] -> Int

@@ -13,8 +13,7 @@ sumExtendedFuel list = sum (map calculateExtendendFuel list)
 -- Calculate the fuel by mass (and fuel mass,...)
 calculateExtendendFuel :: Int -> Int
 calculateExtendendFuel mass = if fuel <= 0 then 0 else fuel + (calculateExtendendFuel fuel)
-  where
-    fuel = calculateFuel mass
+  where fuel = calculateFuel mass
 
 -- Calculate the fuel by mass
 calculateFuel :: Int -> Int
@@ -24,11 +23,11 @@ calculateFuel mass = mass `div` 3 - 2
 
 -- Solve first challenge
 solve1 :: Input -> Int
-solve1 (Lines (Just list)) = sumFuel $ toInt list
+solve1 (Lines (Just list)) = sumFuel $ map read list
 
 -- Solve second challenge
 solve2 :: Input -> Int
-solve2 (Lines (Just list)) = sumExtendedFuel $ toInt list
+solve2 (Lines (Just list)) = sumExtendedFuel $ map read list
 
 -- Print challenge result
 main = do
