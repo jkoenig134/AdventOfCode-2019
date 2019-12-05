@@ -27,10 +27,28 @@ mult :: Modes -> [Int] -> Int -> [Int]
 mult (m:n:o:xs) codes offset = setPos o codes (3+offset) ((pos m (1+offset)) * (pos n (2+offset)))
   where pos mode i = position mode i codes
 
+jumpIfTrue :: Modes -> [Int] -> Int -> Int
+jumpIfTrue (m:n:xs) codes offset = if ((pos m (1 + offset)) /= 0) then (pos n (2 + offset)) else (offset + 3)
+  where pos mode i = position mode i codes
+
+jumpIfFalse :: Modes -> [Int] -> Int -> Int
+jumpIfFalse (m:n:xs) codes offset = if ((pos m (1 + offset)) == 0) then (pos n (2 + offset)) else (offset + 3)
+  where pos mode i = position mode i codes
+
+lessThan :: Modes -> [Int] -> Int -> [Int]
+lessThan (m:n:o:xs) codes offset = setPos o codes (3+offset) ( if (pos m (1+offset)) < (pos n (2+offset)) then 1 else 0)
+  where pos mode i = position mode i codes
+
+equals :: Modes -> [Int] -> Int -> [Int]
+equals (m:n:o:xs) codes offset = setPos o codes (3+offset) ( if (pos m (1+offset)) == (pos n (2+offset)) then 1 else 0)
+  where pos mode i = position mode i codes
+
 operate :: Operation -> [Int] -> Int -> [Int]
 operate (op, modes) codes offset
   | op == 1 = add modes codes offset
   | op == 2 = mult modes codes offset
+  | op == 7 = lessThan modes codes offset
+  | op == 8 = equals modes codes offset
   | op == 99 = codes
   | otherwise = error ("couldn't handle: " ++ (show op))
   
@@ -38,9 +56,12 @@ run :: [Int] -> Int -> Int -> [Int] -> [Int]
 run codes ip input output
   | op == 3 = run (set codes (codes !! (ip + 1)) input) (ip + 2) input output
   | op == 4 = run codes (ip + 2) input ((codes !! (codes !! (ip + 1))) : output)
+  | op == 5 = run codes (jumpIfTrue modes codes ip) input output
+  | op == 6 = run codes (jumpIfFalse modes codes ip) input output
   | op == 99 = output
   | otherwise = run (operate (parseCode (codes !! ip)) codes ip) (ip + 4) input output
   where op = fst (parseCode (codes !! ip))
+        modes = snd (parseCode (codes !! ip))
 
 mainRun :: [Int] -> Int -> [Int]
 mainRun codes input = run codes 0 input []
@@ -65,14 +86,14 @@ set list idx val = (take idx list) ++ [val] ++ (drop (idx + 1) list)
 {- Handle input and solve executions -}
 
 -- Solve first challenge
-solve1 :: Input -> [Int]
-solve1 (Line (Just line)) = mainRun (toIntList line) 1
+solve1 :: Input -> Int
+solve1 (Line (Just line)) = head $ mainRun (toIntList line) 1
 
 -- Solve second challenge
 solve2 :: Input -> Int
-solve2 (Line (Just line)) = 5
+solve2 (Line (Just line)) = head $ mainRun (toIntList line) 5
 
 -- Print challenge result
 main = do
   solve "BlessRNG"     (Line Nothing) (solve1)
-  solve "TODO" (Line Nothing) (solve2)
+  solve "xD" (Line Nothing) (solve2)
