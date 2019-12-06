@@ -10,7 +10,7 @@
 
 ; Returns a sequence of objects that orbit the given center
 (defn orbiting [orbit-map center]
-  (map (partial first) (filter #(= (% 1) center) orbit-map)))
+  (map first (filter #(= (% 1) center) orbit-map)))
 
 ; Calculates the minimum amount of traversals required in an orbit map to move from object to destination
 ; (This is currently very inefficient and bad, I might still improve it)
