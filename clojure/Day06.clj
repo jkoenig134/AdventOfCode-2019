@@ -25,5 +25,5 @@
   (apply hash-map (flatten (map (comp reverse #(.split #"\)" %)) (.split #"\n" raw)))))
 
 (def input (parse-orbit-map (slurp (first *command-line-args*))))
-(println "Total number of (in)direct orbits:" (time (direct-and-indirect-orbits input)))
-(println "Traversals required to get from you to santa:" (time (traversals input "YOU" "SAN")))
+(println "Total number of (in)direct orbits:" (direct-and-indirect-orbits input))
+(println "Traversals required to get from you to santa:" (traversals input "YOU" "SAN"))
