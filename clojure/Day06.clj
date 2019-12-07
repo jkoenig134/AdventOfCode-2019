@@ -16,9 +16,9 @@
 (defn traversals [orbit-map object destination]
   (let [object-centers (orbit-centers orbit-map object)
         destination-centers (orbit-centers orbit-map destination)
-        common-ancestor (some (set destination-centers) object-centers)]
-    (+ (count-until common-ancestor object-centers)
-       (count-until common-ancestor destination-centers))))
+        first-common-center (some (set destination-centers) object-centers)]
+    (+ (count-until first-common-center object-centers)
+       (count-until first-common-center destination-centers))))
 
 ; Parses the input format into a map of object -> orbit center
 (defn parse-orbit-map [raw]
