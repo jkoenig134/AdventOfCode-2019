@@ -5,8 +5,8 @@
 
 (def input (intcode/parse-intcodes (slurp (first *command-line-args*))))
 
-(println "Diagnostic program outputs (air conditioner - enter 2 when asked for input):")
-(intcode/run input)
+(println "Diagnostic program outputs (air conditioner):")
+(println (last (:outputs (intcode/run input [2]))))
 
-(println "Diagnostic program outputs (thermal radiators - enter 5 when asked for input):")
-(intcode/run input)
+(println "Diagnostic program outputs (thermal radiators):")
+(println (last (:outputs (intcode/run input [5]))))

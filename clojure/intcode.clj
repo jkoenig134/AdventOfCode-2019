@@ -7,23 +7,14 @@
                (assoc process-state :terminated true))
    :params   0})
 
-; Returns an opcode that takes *param-amount* parameters, applies the given function to them (excpet the last)
+; Returns an opcode that takes *param-amount* parameters, applies the given function to them (except the last)
 ; and returns a new state with updated memory and pointer.
-(defn memory-change-opcode [function param-amount]
-  {:operator (fn [process-state & params]
-               (update
-                 (assoc-in process-state [:memory (last params)]
-                           (apply function (map (:memory process-state) (drop-last params))))
-                 :pointer (partial + param-amount 1)))
-   :params   param-amount})
-
-; Returns an opcode that takes *param-amount* parameters, applies the given function to them
-; (presumably for side-effects) and returns a new state with an updated pointer.
-(defn side-effect-opcode [function param-amount]
+(defn calc-opcode [function param-amount]
   {:operator (fn [process-state & param-addresses]
-               (do
-                 (apply function (map (:memory process-state) param-addresses))
-                 (update process-state :pointer (partial + param-amount 1))))
+               (update
+                 (assoc-in process-state [:memory (last param-addresses)]
+                           (apply function (map (:memory process-state) (drop-last param-addresses))))
+                 :pointer (partial + param-amount 1)))
    :params   param-amount})
 
 ; Returns an opcode that takes two parameters, applies the given function to the first one
@@ -36,16 +27,32 @@
                  (update process-state :pointer (partial + 3))))
    :params   2})
 
+(def input-opcode
+  {:operator (fn [process-state destination]
+               (-> process-state
+                   (assoc-in [:memory destination] (first (:inputs process-state)))
+                   (update :inputs rest)
+                   (update :pointer (partial + 2))))
+   :params   1})
+
+(def output-opcode
+  {:operator (fn [process-state address]
+               (-> process-state
+                   (update :outputs #(conj % ((:memory process-state) address)))
+                   (update :pointer (partial + 2))))
+   :params   1})
+
+
 ; A map of opcodes this computer currently supports
 (def opcode-map
-  {1  (memory-change-opcode + 3)
-   2  (memory-change-opcode * 3)
-   4  (side-effect-opcode println 1)
-   3  (memory-change-opcode #(do (println "Please input a value: ") (Integer/parseInt (read-line))) 1)
+  {1  (calc-opcode + 3)
+   2  (calc-opcode * 3)
+   3  input-opcode
+   4  output-opcode
    5  (goto-opcode (complement zero?))
    6  (goto-opcode zero?)
-   7  (memory-change-opcode #(if (< %1 %2) 1 0) 3)
-   8  (memory-change-opcode #(if (= %1 %2) 1 0) 3)
+   7  (calc-opcode #(if (< %1 %2) 1 0) 3)
+   8  (calc-opcode #(if (= %1 %2) 1 0) 3)
    99 terminal-opcode})
 
 ; A map of parameter modes this computer currently supports
@@ -66,7 +73,7 @@
 ; fetch following address if opcode requires a destination address. Repeat with the state returned by the opcode operator).
 (defn process [process-state]
   (if (:terminated process-state)
-    (:memory process-state)
+    process-state
     (let [pointer (:pointer process-state)
           memory (:memory process-state)
           opcode (resolve-opcode (memory pointer))
@@ -77,8 +84,8 @@
       (recur (apply operator process-state parameters)))))
 
 ; Returns the first value in the memory returned by process when using the given memory as the initial memory
-(defn run [memory]
-  (first (process {:terminated false :pointer 0 :memory memory})))
+(defn run [memory inputs]
+  (process {:terminated false :pointer 0 :memory memory :inputs inputs :outputs []}))
 
 ; Splits the given string at comma and new line, parses the results to integers and returns that as a vector
 (defn parse-intcodes [raw]
