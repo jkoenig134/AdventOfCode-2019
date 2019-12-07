@@ -28,12 +28,15 @@
    :params   2})
 
 ; The input opcode. Takes the first of the remaining inputs in the state and stores it at the given address parameter.
+; If no further input is available, interrupts the process.
 (def input-opcode
   {:operator (fn [process-state destination]
-               (-> process-state
-                   (assoc-in [:memory destination] (first (:inputs process-state)))
-                   (update :inputs rest)
-                   (update :pointer (partial + 2))))
+               (if (seq (:inputs process-state))
+                 (-> process-state
+                     (assoc-in [:memory destination] (first (:inputs process-state)))
+                     (update :inputs rest)
+                     (update :pointer (partial + 2)))
+                 (assoc process-state :interrupted true)))
    :params   1})
 
 ; The output opcode. Adds the parameter value to the outputs of the process state.
@@ -74,7 +77,7 @@
 ; apply associated operator to the parameters in the next addresses resolved using parameter-types.
 ; Repeat with the state returned by the opcode operator).
 (defn process [process-state]
-  (if (:terminated process-state)
+  (if (or (:interrupted process-state) (:terminated process-state))
     process-state
     (let [pointer (:pointer process-state)
           memory (:memory process-state)
@@ -85,9 +88,15 @@
           parameters (map #(%1 memory %2) param-modes param-addresses)]
       (recur (apply operator process-state parameters)))))
 
+(defn initial-state [memory & inputs]
+  {:pointer 0
+   :memory memory
+   :inputs (into [] inputs)
+   :outputs []})
+
 ; Returns the final state when having processed the given intcode memory with the inputs.
 (defn run [memory inputs]
-  (process {:terminated false :pointer 0 :memory memory :inputs inputs :outputs []}))
+  (process (initial-state memory inputs)))
 
 ; Splits the given string at comma and new line, parses the results to integers and returns that as a vector
 (defn parse-intcodes [raw]
