@@ -80,14 +80,6 @@
 (defn run [memory]
   (first (process {:terminated false :pointer 0 :memory memory})))
 
-; Returns 100 * noun + verb for the first noun and verb combination (with noun and verb both in input-range)
-; for whom (process (assoc memory 1 noun 2 verb)) returns the given result (nil if no such combination could be found).
-(defn find-fitting-input [memory result input-range]
-  (first (for [noun input-range
-               verb input-range
-               :when (= result (run (assoc memory 1 noun 2 verb)))]
-           (+ (* 100 noun) verb))))
-
 ; Splits the given string at comma and new line, parses the results to integers and returns that as a vector
 (defn parse-intcodes [raw]
   (vec (map #(Integer/parseInt %) (.split #",|\n" raw))))
