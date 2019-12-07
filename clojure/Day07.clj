@@ -11,12 +11,12 @@
 (defn amplify [amplifier input setting]
   (last (:outputs (intcode/run amplifier [setting input]))))
 
-(defn run-amplifier [amplifier settings]
+(defn run-amplifier-chain [amplifier settings]
   (reduce (partial amplify amplifier) 0 settings))
 
 (defn largest-output-signal [amplifier possible-settings]
   (apply max (for [settings (permutations possible-settings)]
-               (run-amplifier amplifier settings))))
+               (run-amplifier-chain amplifier settings))))
 
 (def input (intcode/parse-intcodes (slurp (first *command-line-args*))))
 

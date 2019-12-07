@@ -27,6 +27,7 @@
                  (update process-state :pointer (partial + 3))))
    :params   2})
 
+; The input opcode. Takes the first of the remaining inputs in the state and stores it at the given address parameter.
 (def input-opcode
   {:operator (fn [process-state destination]
                (-> process-state
@@ -35,6 +36,7 @@
                    (update :pointer (partial + 2))))
    :params   1})
 
+; The output opcode. Adds the parameter value to the outputs of the process state.
 (def output-opcode
   {:operator (fn [process-state address]
                (-> process-state
@@ -67,10 +69,10 @@
         digits (map #(rem % 10) (drop 2 (iterate #(quot % 10) opcode)))]
     (assoc (opcode-map opcode-id) :param-modes (map param-modes digits))))
 
-; Processes a vector of memory values via the given algorithm.
-; (if process is in state "terminated", return memory; else, resolve opcode at pointer using opcode-map,
-; apply associated operator to the parameters in the next addresses resolved using parameter-types, additionally,
-; fetch following address if opcode requires a destination address. Repeat with the state returned by the opcode operator).
+; Processes a process-state via the given algorithm.
+; (if process is in state "terminated", return the state; else, resolve opcode at pointer using opcode-map,
+; apply associated operator to the parameters in the next addresses resolved using parameter-types.
+; Repeat with the state returned by the opcode operator).
 (defn process [process-state]
   (if (:terminated process-state)
     process-state
@@ -83,7 +85,7 @@
           parameters (map #(%1 memory %2) param-modes param-addresses)]
       (recur (apply operator process-state parameters)))))
 
-; Returns the first value in the memory returned by process when using the given memory as the initial memory
+; Returns the final state when having processed the given intcode memory with the inputs.
 (defn run [memory inputs]
   (process {:terminated false :pointer 0 :memory memory :inputs inputs :outputs []}))
 
