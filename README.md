@@ -13,7 +13,7 @@ In your terminal, run `solve <language> <day> <path-to-input-file>`. The followi
 | 03       | ✅       | ✅   | ✅       | ❌     | (✅)  | ❌      | ✅   |
 | 04       | ✅       | ✅   | ✅       | ❌     | ❌    | ✅      | ❌   |
 | 05       | ✅       | ✅   | ✅       | ❌     | ❌    | ❌      | ❌   |
-| 06       | ✅       | ❌   | ❌       | ❌     | ❌    | ✅      | ❌   |
+| 06       | ✅       | ❌   | ✅       | ❌     | ❌    | ✅      | ❌   |
 | 07       | ✅       | ❌   | ❌       | ❌     | ❌    | ❌      | ❌   |
 
 For `day`, input `Day01`, `Day02` etc.
