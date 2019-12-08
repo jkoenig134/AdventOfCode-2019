@@ -95,7 +95,7 @@
    :outputs []})
 
 ; Returns the final state when having processed the given intcode memory with the inputs.
-(defn run [memory inputs]
+(defn run [memory & inputs]
   (process (initial-state memory inputs)))
 
 ; Splits the given string at comma and new line, parses the results to integers and returns that as a vector

@@ -4,7 +4,7 @@
   (:require intcode))
 
 (defn run [memory]
-  (first (:memory (intcode/run memory []))))
+  (first (:memory (intcode/run memory))))
 
 (def input (intcode/parse-intcodes (slurp (first *command-line-args*))))
 
