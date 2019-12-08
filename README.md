@@ -15,6 +15,7 @@ In your terminal, run `solve <language> <day> <path-to-input-file>`. The followi
 | 05       | ✅       | ✅   | ✅       | ❌     | ❌    | ❌      | ❌   |
 | 06       | ✅       | ❌   | ✅       | ❌     | ❌    | ✅      | ❌   |
 | 07       | ✅       | ❌   | ❌       | ❌     | ❌    | ❌      | ❌   |
+| 08       | ✅       | ❌   | ❌       | ❌     | ❌    | ❌      | ❌   |
 
 For `day`, input `Day01`, `Day02` etc.
 
