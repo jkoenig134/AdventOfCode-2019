@@ -37,6 +37,7 @@ idxByVal []     val = error "value not found"
 idxByVal (x:xs) val = search (x:xs) 0
   where search (x:xs) idx = if x == val then idx else search xs (idx + 1)
 
+-- Count an element in the list
 count :: (Eq t) => [t] -> t -> Int
 count []     elem = 0
 count (x:xs) elem = if (x == elem) then (1 + count xs elem) else (count xs elem)

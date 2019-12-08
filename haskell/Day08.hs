@@ -5,27 +5,37 @@ import System.Environment
 
 type Layer = [String]
 
+-- Parse a line by splitting after width
 parseWidth :: String -> Int -> Layer
-parseWidth [] with = []
+parseWidth []    width = []
 parseWidth input width = (take width input) : (parseWidth (drop width input) width)
 
-parseHeight :: [String] -> Int -> [[String]]
-parseHeight [] height = []
+-- Parse a layer by splitting after height 
+parseHeight :: Layer -> Int -> [Layer]
+parseHeight []    height = []
 parseHeight input height = take height input : (parseHeight (drop height input) height)
 
+-- Count a char in a layer
 countInLayer :: Layer -> Char -> Int
 countInLayer layer letter = sum (map (\x -> (count x letter)) layer)
 
+-- Find the layer with the minimum amount of '0'
 find :: [Layer] -> Layer
 find layers = snd $ minimum $ [(countInLayer layer '0', layer) | layer <- layers]
 
-cover :: Layer -> Layer -> Layer
-cover layerA [] = layerA
-cover [] layerB = layerB
-cover layerA layerB = layerC
+-- Cover all layers to get the final layer
+cover :: [Layer] -> Layer
+cover layers = foldl coverL [] layers
   where
-    layerC = zipWith sCover layerA layerB
+    coverL layerA []     = layerA
+    coverL [] layerB     = layerB
+    coverL layerA layerB = zipWith coverS layerA layerB
+    coverS lineA lineB = zipWith coverC lineA lineB
+    coverC a b
+      | (a == '2') = b
+      | otherwise  = a
 
+-- Print a layer by replacing the codes with actual "pixels"
 printLayer :: Layer -> String
 printLayer layer = map replace (unlines layer)
   where
@@ -33,15 +43,6 @@ printLayer layer = map replace (unlines layer)
       | (a == '0') = '█'
       | (a == '1') = ' '
       | otherwise  = a      
-      
-sCover line line2 = zipWith cover2 line line2
-
-cover2 a b
-  | (a == '2')  = b
-  | otherwise = a
-
-coverAll :: [Layer] -> Layer
-coverAll layers = foldl cover [] layers
 
 {- Handle input and solve executions -}
 
@@ -53,7 +54,7 @@ solve1 (Line (Just line)) = (countInLayer zeroLayer '1') * (countInLayer zeroLay
 
 -- Solve second challenge
 solve2 :: Input -> String
-solve2 (Line (Just line)) = printLayer $ coverAll layers
+solve2 (Line (Just line)) = printLayer $ cover layers
   where
     layers = parseHeight (parseWidth line 25) 6
 
