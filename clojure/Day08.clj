@@ -16,7 +16,7 @@
 
 ; Returns a suited string representation for an encoded pixel.
 (defn pixel-to-str [pixel]
-  (if (= pixel \0) " " "█"))
+  (if (= pixel \0) "░" "█"))
 
 ; Decodes an encoded image (raw string or sequence of chars).
 ; Splits the input into layers, reduces them by layering them on top of each other,
