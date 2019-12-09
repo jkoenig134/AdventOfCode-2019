@@ -122,4 +122,4 @@
 
 ; Splits the given string at comma and new line, parses the results to BigInts and returns that as a vector
 (defn parse-intcodes [raw]
-  (vec (map #(BigInt/fromBigInteger %) (map #(BigInteger. %) (.split #",|\n" raw)))))
+  (vec (map #(Long/parseLong %) (.split #",|\n" raw))))
