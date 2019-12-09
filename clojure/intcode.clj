@@ -83,7 +83,8 @@
 (def param-modes
   {0 (fn [process-state address] (read-mem process-state address))
    1 (fn [_ address] address)
-   2 (fn [process-state address] (read-mem process-state (+ address (:rel-base process-state))))})
+   2 (fn [process-state address]
+       (+ (read-mem process-state address) (:rel-base process-state)))})
 
 ; Resolves a raw opcode (including parameter modes) to an opcode from the given opcode-map
 ; and the parameter type ids.
@@ -117,7 +118,7 @@
 
 ; Returns the final state when having processed the given intcode memory with the inputs.
 (defn run [memory & inputs]
-  (process (initial-state memory inputs)))
+  (process (apply initial-state memory inputs)))
 
 ; Splits the given string at comma and new line, parses the results to BigInts and returns that as a vector
 (defn parse-intcodes [raw]
