@@ -1,5 +1,18 @@
 ; common ops for day 2 and 5
-(ns intcode)
+(ns intcode
+  (:import (clojure.lang BigInt)))
+
+; Reads a value from memory
+(defn read-mem [process-state address]
+  (let [mem (:memory process-state)]
+    (if (>= address (count mem)) 0 (mem address))))
+
+; Writes a value to memory and returns the new process state
+(defn write-mem [process-state address value]
+  (let [mem (:memory process-state)]
+    (if (>= address (count mem))
+      (assoc process-state :memory (conj (into mem (repeat (- address (count mem)) 0)) value))
+      (assoc-in process-state [:memory address] value))))
 
 ; The terminal opcode (terminates the process)
 (def terminal-opcode
@@ -11,20 +24,19 @@
 ; and returns a new state with updated memory and pointer.
 (defn calc-opcode [function param-amount]
   {:operator (fn [process-state & param-addresses]
-               (update
-                 (assoc-in process-state [:memory (last param-addresses)]
-                           (apply function (map (:memory process-state) (drop-last param-addresses))))
-                 :pointer (partial + param-amount 1)))
+               (-> process-state
+                   (write-mem (last param-addresses) (apply function (map (partial read-mem process-state) (butlast param-addresses))))
+                   (update :pointer + param-amount 1)))
    :params   param-amount})
 
 ; Returns an opcode that takes two parameters, applies the given function to the first one
 ; and sets the process's pointer to the second one if the former returns a truthful value.
 ; Otherwise updates the pointer as usual.
 (defn goto-opcode [test-fn]
-  {:operator (fn [process-state value-pointer pointer-adress]
-               (if (test-fn ((:memory process-state) value-pointer))
-                 (assoc process-state :pointer ((:memory process-state) pointer-adress))
-                 (update process-state :pointer (partial + 3))))
+  {:operator (fn [process-state value-pointer destination]
+               (if (test-fn (read-mem process-state value-pointer))
+                 (assoc process-state :pointer (read-mem process-state destination))
+                 (update process-state :pointer + 3)))
    :params   2})
 
 ; The input opcode. Takes the first of the remaining inputs in the state and stores it at the given address parameter.
@@ -33,9 +45,9 @@
   {:operator (fn [process-state destination]
                (if (seq (:inputs process-state))
                  (-> process-state
-                     (assoc-in [:memory destination] (first (:inputs process-state)))
+                     (write-mem destination (first (:inputs process-state)))
                      (update :inputs rest)
-                     (update :pointer (partial + 2)))
+                     (update :pointer + 2))
                  (assoc process-state :interrupted true)))
    :params   1})
 
@@ -43,10 +55,16 @@
 (def output-opcode
   {:operator (fn [process-state address]
                (-> process-state
-                   (update :outputs #(conj % ((:memory process-state) address)))
-                   (update :pointer (partial + 2))))
+                   (update :outputs conj (read-mem process-state address))
+                   (update :pointer + 2)))
    :params   1})
 
+(def rel-base-offset-opcode
+  {:operator (fn [process-state offset-pointer]
+               (-> process-state
+                   (update :rel-base + (read-mem process-state offset-pointer))
+                   (update :pointer + 2)))
+   :params   1})
 
 ; A map of opcodes this computer currently supports
 (def opcode-map
@@ -58,12 +76,15 @@
    6  (goto-opcode zero?)
    7  (calc-opcode #(if (< %1 %2) 1 0) 3)
    8  (calc-opcode #(if (= %1 %2) 1 0) 3)
+   9  rel-base-offset-opcode
    99 terminal-opcode})
 
 ; A map of parameter modes this computer currently supports
 (def param-modes
-  {0 nth
-   1 (comp last vector)})
+  {0 (fn [process-state address] (read-mem process-state address))
+   1 (fn [_ address] address)
+   2 (fn [process-state address]
+       (+ (read-mem process-state address) (:rel-base process-state)))})
 
 ; Resolves a raw opcode (including parameter modes) to an opcode from the given opcode-map
 ; and the parameter type ids.
@@ -85,19 +106,20 @@
           operator (:operator opcode)
           param-modes (:param-modes opcode)
           param-addresses (range (inc pointer) (+ pointer (:params opcode) 1))
-          parameters (map #(%1 memory %2) param-modes param-addresses)]
+          parameters (map #(%1 process-state %2) param-modes param-addresses)]
       (recur (apply operator process-state parameters)))))
 
 (defn initial-state [memory & inputs]
   {:pointer 0
    :memory memory
    :inputs (into [] inputs)
-   :outputs []})
+   :outputs []
+   :rel-base 0})
 
 ; Returns the final state when having processed the given intcode memory with the inputs.
 (defn run [memory & inputs]
-  (process (initial-state memory inputs)))
+  (process (apply initial-state memory inputs)))
 
-; Splits the given string at comma and new line, parses the results to integers and returns that as a vector
+; Splits the given string at comma and new line, parses the results to BigInts and returns that as a vector
 (defn parse-intcodes [raw]
-  (vec (map #(Integer/parseInt %) (.split #",|\n" raw))))
+  (vec (map #(Long/parseLong %) (.split #",|\n" raw))))
