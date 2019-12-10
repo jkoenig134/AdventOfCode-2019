@@ -6,14 +6,16 @@
 (defn vector-add [& vectors]
   (vec (reduce (partial map +) vectors)))
 
-(defn points-between [a b]
-  (let [y-diff (- (b 1) (a 1))
-        x-diff (- (b 0) (a 0))
+(defn direction-vector [from to]
+  (let [y-diff (- (to 1) (from 1))
+        x-diff (- (to 0) (from 0))
         gcd (Math/abs (gcd y-diff x-diff))]
     (if (> gcd 1)
-      (let [direction [(/ x-diff gcd) (/ y-diff gcd)]]
-        (take-while (partial not= b) (drop 1 (iterate (partial vector-add direction) a))))
-      ())))
+      [(/ x-diff gcd) (/ y-diff gcd)]
+      [x-diff y-diff])))
+
+(defn points-between [a b]
+  (take-while (partial not= b) (drop 1 (iterate (partial vector-add (direction-vector a b)) a))))
 
 (defn can-view? [from to asteroids]
   (not-any? asteroids (points-between from to)))
