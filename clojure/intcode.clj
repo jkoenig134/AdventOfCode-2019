@@ -59,6 +59,7 @@
                    (update :pointer + 2)))
    :params   1})
 
+; An opcode that increases the relative base (for relative parameter mode) by the value of its only parameter.
 (def rel-base-offset-opcode
   {:operator (fn [process-state offset-pointer]
                (-> process-state
