@@ -15,10 +15,6 @@
 (defn prepare-amps [acs settings]
   (map (partial intcode/initial-state acs) settings))
 
-; Continues processing an amp state by removing its interrupted state and adding the given input
-(defn continue [input amp-state]
-  (intcode/process (-> amp-state (dissoc :interrupted) (update :inputs #(conj % input)))))
-
 ; Returns true if all of the given states are terminated
 (defn all-terminated? [states]
   (not-any? (complement identity) (map :terminated states)))
@@ -30,7 +26,7 @@
          input 0]
     (if (all-terminated? amp-states)
       input
-      (let [processed (continue input (first amp-states))]
+      (let [processed (intcode/continue (first amp-states) input)]
         (recur (conj (pop amp-states) processed) (last (:outputs processed)))))))
 
 ; Finds the largest output signal possible given an acs and the possible phase settings.

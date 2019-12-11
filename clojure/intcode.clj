@@ -120,6 +120,10 @@
 (defn run [memory & inputs]
   (process (apply initial-state memory inputs)))
 
+; Continues processing a state by removing its interrupted state and adding the given input
+(defn continue [process-state & inputs]
+  (intcode/process (-> process-state (dissoc :interrupted) (update :inputs into inputs))))
+
 ; Splits the given string at comma and new line, parses the results to BigInts and returns that as a vector
 (defn parse-intcodes [raw]
   (vec (map #(Long/parseLong %) (.split #",|\n" raw))))
