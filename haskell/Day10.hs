@@ -4,27 +4,32 @@ import Common
 
 data Type = Empty | Astereoid deriving (Eq, Show)
 
-type Point = (Int, Int)
-type Map = [(Point, Type)]
+type Point  = (Int, Int)
+type Map    = [(Point, Type)]
 
+-- Get the type by point
 getType :: Map -> Point -> Type
-getType [] p = error "Point not on map"
+getType []          p = error "Point not on map"
 getType ((p',t):xs) p = if (p == p') then t else getType xs p
 
+-- Set the type for a point
 setType :: Map -> Point -> Type -> Map
 setType list p t = set list (index list 0) (p, t)
   where 
-    index [] i = error "point not found"
+    index []            i = error "point not found"
     index ((p', t'):xs) i = if p' == p then i else index xs (i + 1)    
-    
+
+-- Get the height of the map    
 height :: Map -> Int
-height [] = error "empty map"
+height []             = error "empty map"
 height (((a,b),t):xs) = if (a == 0) then 1 + (height xs) else 0
 
+-- Get the width of the map
 width :: Map -> Int
-width [] = 0
+width []             = 0
 width (((a,b),t):xs) = if (b == 0) then 1 + (width xs) else 0 + (width xs)
 
+-- Calculate all points between two points by using gradient
 points :: Point -> Point -> [Point]
 points (a,b) (x,y)
   | (a == x) && (b < y) = [(a, b + k) | k <- [1..(y-b-1)]]
@@ -42,54 +47,72 @@ points (a,b) (x,y)
     xDiff = abs (x-a)
     yDiff = abs (y-b)
 
+-- Check if between two points are any asteroids
 canSee :: Map -> Point -> Point -> Bool
 canSee map' start end = not $ elem Astereoid types
   where
     types = map (getType map') (points start end)
 
--- findStation :: Map -> Point
-findStation map' = fst $ maximum [(count p, p) | p <- asteroids]
+-- Find the perfect station and its observable asteroids
+findStation :: Map -> (Int, Point)
+findStation map' = maximum [(count p, p) | p <- asteroids]
   where
-    count p = length [p' | p' <- asteroids, canSee map' p p'] - 1
+    count p   = length [p' | p' <- asteroids, canSee map' p p'] - 1
     asteroids = [point | (point,t) <- map', t == Astereoid]
 
-laser :: Map -> Point -> Int -> [Point]
-laser map' (x,y) 5000 = []
-laser map' (x,y) i = case getAst (points (x,y) (boarder !! (i `mod` (length boarder)))) of Nothing -> laser map' (x,y) (i + 1)
-                                                                                           Just (a,b) -> (a,b) : (laser (setType map' (a,b) Empty) (x,y) (i + 1))
+-- Laser all asteroids from a laser location and return its destroyed asteroids
+laser :: Map -> Point -> Double -> [Point]
+laser map' (x,y) last = eliminated : (laser (setType map' eliminated Empty) (x,y) (calcAngle eliminated))
   where
-    getAst []   = Nothing
-    getAst ((a,b):xs) = if (getType map' (a,b)) == Astereoid then Just (a,b) else getAst xs
-    
-    boarder = [(x + i, 0) | i <- [0..(w - x)]] ++ [(w, i) | i <- [1..h]] ++ [(w - i, h) | i <- [1..w]] ++ [(0, h-i) | i <- [1..h]] ++ [(i,0) | i <- [1..(x-1)]]
-    w = (width map') - 1
-    h = (height map') - 1
-  
+    eliminated    = (nearest $ fst $ minimum [(calcAngle p, p) | p <- asteroids, (calcAngle p) > last])
+    nearest alpha = snd $ minimum [(distance (x,y) p, p) | p <- asteroids, round6dp (alpha) == round6dp (calcAngle p), ((distance (x,y) p) /= 0)]   
+    asteroids     = [point | (point,t) <- map', t == Astereoid]
+    calcAngle p   = angle (distanceVector (x,y) p)
+
+-- Get the vector between two points
+distanceVector :: Point -> Point -> Point
+distanceVector (x,y) (x',y') = (x'-x, y-y')
+
+-- Calculate the distance between two points
+distance :: Point -> Point -> Double
+distance (x,y) (x',y') = distanceH (fromIntegral x) (fromIntegral y) (fromIntegral x') (fromIntegral y')
+  where
+    distanceH x y x' y' = sqrt ((x-x')^2 + (y-y')^2)
+
+-- Calculate the angle between y-axis and a vector (in degrees)
+angle :: Point -> Double
+angle (x,y)
+  | result < 0 = 360 - (degrees (abs result))
+  | otherwise  = degrees result  
+  where
+    result :: Double
+    result = atan2 (fromIntegral x) (fromIntegral y)
+    degrees :: Double -> Double
+    degrees x = 180 * (x / pi)
+
+-- Parse the map by input string  
 parseMap :: [String] -> Map
 parseMap lines = [pointAt x y | x <- [0..width], y <- [0..height]]
   where
-    width = length (lines !! 0) - 1
-    height = length lines - 1
+    width       = length (lines !! 0) - 1
+    height      = length lines - 1
     pointAt x y = ((x, y), if ((lines !! y) !! x) == '.' then Empty else Astereoid)
   
 {- Handle input and solve executions -}
 
 -- Solve first challenge
--- solve1 :: Input -> Point
+solve1 :: Input -> (Int, Point)
 solve1 (Lines (Just lines)) = findStation map'
   where
     map' = parseMap lines
 
-mapIt :: Map
-mapIt = [((0,0),Empty),((0,1),Empty),((0,2),Astereoid),((0,3),Empty),((0,4),Empty),((1,0),Astereoid),((1,1),Empty),((1,2),Astereoid),((1,3),Empty),((1,4),Empty),((2,0),Empty),((2,1),Empty),((2,2),Astereoid),((2,3),Empty),((2,4),Empty),((3,0),Empty),((3,1),Empty),((3,2),Astereoid),((3,3),Empty),((3,4),Astereoid),((4,0),Astereoid),((4,1),Empty),((4,2),Astereoid),((4,3),Astereoid),((4,4),Astereoid)]
-
 -- Solve second challenge
--- solve2 :: Input -> Int
-solve2 (Lines (Just lines)) = (laser map' (8,3) 0)
+solve2 :: Input -> Point
+solve2 (Lines (Just lines)) = (laser map' (19,11) (-1)) !! 199
   where
     map' = parseMap lines
 
 -- Print challenge result
 main = do
-  solve "New station coordinates"           (Lines Nothing) (solve1)
-  solve "TODO" (Lines Nothing) (solve2)
+  solve "New station coordinates and its observable asteroids" (Lines Nothing) (solve1)
+  solve "Location of the 200th laser'd asteroids"              (Lines Nothing) (solve2)
