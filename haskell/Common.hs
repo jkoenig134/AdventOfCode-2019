@@ -50,6 +50,10 @@ digits a 0      = []
 digits a length = digit : digits (a - (digit * 10 ^ (length - 1))) (length - 1)
   where digit = a `div` (10 ^ (length - 1))
 
+-- Round up til 6 digits
+round6dp :: Double -> Double
+round6dp x = fromIntegral (round $ x * 1e6) / 1e6
+
 {- Solve method to automate input parsing and result printing -}
 
 -- Run the solve method by providing a description and input type
