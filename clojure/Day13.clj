@@ -40,5 +40,5 @@
         (recur next-state (update-tiles tiles next-state))))))
 
 (def input (intcode/parse-intcodes (slurp (first *command-line-args*))))
-(println "Number of block tiles:" (count-tiles (load-game input) :block))
+(println "Number of block tiles:" (count-tiles (load-game input) 2))
 (println "Game score:" (play-game input))
