@@ -27,17 +27,15 @@
   (count (filter #{tile-type} (vals tiles))))
 
 (defn play-game [code]
-  (loop [state (intcode/initial-state (assoc code 0 2))
-         joystick 0
-         tiles {}]
+  (loop [state (intcode/run (assoc code 0 2))
+         tiles (insert-tiles {} state)]
     (if (:terminated state)
       (tiles [-1 0])
-      (let [ball-position (if-let [ball (first (filter #(= :ball (tiles %)) (keys tiles)))] (first ball) 0)
-            joystick-change (compare joystick ball-position)]
-        (recur (intcode/continue state joystick-change)
-               (+ joystick joystick-change)
-               (insert-tiles tiles state))))))
+      (let [ball-position (first (filter #(= :ball (tiles %)) (keys tiles)))
+            paddle-position (first (filter #(= :paddle (tiles %)) (keys tiles)))
+            joystick-tilt (compare (ball-position 0) (paddle-position 0))]
+        (recur (intcode/continue state joystick-tilt) (insert-tiles tiles state))))))
 
 (def input (intcode/parse-intcodes (slurp "../input/Day13.txt")))
 (println "Number of block tiles:" (count-tiles (load-game input) :block))
-(println "Game score:" (play-game input)) ; FIXME prints :empty
+(println "Game score:" (play-game input))                   ; FIXME prints :empty
