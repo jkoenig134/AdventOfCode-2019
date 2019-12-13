@@ -10,7 +10,7 @@
   (update moon :velocity vector-add (map compare (:position other-moon) (:position moon))))
 
 (defn step-time [moons]
-  (map update-position (map #(reduce apply-gravity % moons) moons)))
+  (doall (map update-position (map #(reduce apply-gravity % moons) moons))))
 
 (defn simulate [moons]
   (iterate step-time moons))
@@ -31,6 +31,5 @@
 (defn parse-moons [raw]
   (map create-moon (map #(re-seq #"-?\d+" %) (.split #"\n" raw))))
 
-; FIXME stack overflow when starting from terminal
 (def input (parse-moons (slurp (first *command-line-args*))))
 (println "Total energy after 1000 simulation steps:" (energy-in-system (nth (simulate input) 1000)))
