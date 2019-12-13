@@ -19,13 +19,13 @@
   (let [result (intcode/run code)]
     (update-tiles {} result)))
 
-; In a map of tiles, finds the first key that is associated with the given tile type.
-(defn find-tile-position [tiles tile-type]
-  (first (filter #(= tile-type (tiles %)) (keys tiles))))
-
 ; Counts the amount of tiles of the given type in a tiles map
 (defn count-tiles [tiles tile-type]
   (count (filter #{tile-type} (vals tiles))))
+
+; In a map of tiles, finds the first key that is associated with the given tile type.
+(defn find-tile-position [tiles tile-type]
+  (first (filter #(= tile-type (tiles %)) (keys tiles))))
 
 ; Plays and beats the game, returns the score at the end.
 (defn play-game [code]
@@ -39,6 +39,6 @@
             next-state (intcode/continue state joystick-tilt)]
         (recur next-state (update-tiles tiles next-state))))))
 
-(def input (intcode/parse-intcodes (slurp "../input/Day13.txt")))
+(def input (intcode/parse-intcodes (slurp (first *command-line-args*))))
 (println "Number of block tiles:" (count-tiles (load-game input) :block))
 (println "Game score:" (play-game input))
