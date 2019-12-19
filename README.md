@@ -19,6 +19,8 @@ In your terminal, run `solve <language> <day> <path-to-input-file>`. The followi
 | 09       | ✅       | ❌   | ❌       | ❌     | ❌    | ❌      | ❌   |
 | 10       | ✅       | ❌   | ✅       | ❌     | ❌    | ❌      | ❌   |
 | 11       | ✅       | ❌   | ❌       | ❌     | ❌    | ❌      | ❌   |
+| 12       | (✅)     | ❌   | (✅)     | ❌     | ❌    | ❌      | ❌   |
+| 13       | ✅       | ❌   | ❌       | ❌     | ❌    | ❌      | ❌   |
 
 For `day`, input `Day01`, `Day02` etc.
 
