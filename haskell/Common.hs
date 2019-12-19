@@ -31,11 +31,17 @@ split list c = first : split (drop ((length first) + 1) list) c
 set :: [t] -> Int -> t -> [t]
 set list idx val = (take idx list) ++ [val] ++ (drop (idx + 1) list)
 
+-- Modify all elements in the list that fulfill the predicate
+modify :: [t] -> (t -> Bool) -> (t -> t) -> [t]
+modify list pred changer = map (\x -> if (pred x) then (changer x) else x) list
+
 -- Get the first index by value from list
 idxByVal :: (Eq t) => [t] -> t -> Int
-idxByVal []     val = error "value not found"
+idxByVal []     val = error "empty list by idxByVal"
 idxByVal (x:xs) val = search (x:xs) 0
-  where search (x:xs) idx = if x == val then idx else search xs (idx + 1)
+  where 
+    search []     idx = error "value not found"
+    search (x:xs) idx = if x == val then idx else search xs (idx + 1)
 
 -- Count an element in the list
 count :: (Eq t) => [t] -> t -> Int
