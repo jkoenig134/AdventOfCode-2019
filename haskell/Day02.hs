@@ -15,10 +15,6 @@ execute codes offset
     get i  = codes !! (i + offset)
     gget i = codes !! (get i)
 
--- Set the value in a list by a given index
-set :: [t] -> Int -> t -> [t]
-set list idx val = (take idx list) ++ [val] ++ (drop (idx + 1) list)
-
 -- Execute the codes with a given noun and verb
 customExec :: [Int] -> Int -> Int -> Int
 customExec codes noun verb = head $ execute (modify codes) 0

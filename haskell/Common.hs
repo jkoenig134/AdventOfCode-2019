@@ -2,6 +2,8 @@ module Common where
 
 import System.Environment
 
+{- Input utility to read-in lines and convert them -}
+
 -- Input type: Line or Lines
 data Input = Line (Maybe String) | Lines (Maybe [String]) deriving (Eq)
   
@@ -13,10 +15,6 @@ readLines = fmap lines . readFile
 readLine :: FilePath -> IO String
 readLine = readFile
 
--- Convert a list of string to a list of ints
-toInt :: [[Char]] -> [Int]
-toInt = map read
-
 -- Convert a single line to a int list
 toIntList :: String -> [Int]
 toIntList parse = read ("[" ++ parse ++ "]")
@@ -26,6 +24,43 @@ split :: String -> Char -> [String]
 split []   c = []
 split list c = first : split (drop ((length first) + 1) list) c
   where first = takeWhile (/= c) list
+
+{- List utility to operate on lists without using Data.List -}
+
+-- Set the value in a list by a given index
+set :: [t] -> Int -> t -> [t]
+set list idx val = (take idx list) ++ [val] ++ (drop (idx + 1) list)
+
+-- Modify all elements in the list that fulfill the predicate
+modify :: [t] -> (t -> Bool) -> (t -> t) -> [t]
+modify list pred changer = map (\x -> if (pred x) then (changer x) else x) list
+
+-- Get the first index by value from list
+idxByVal :: (Eq t) => [t] -> t -> Int
+idxByVal []     val = error "empty list by idxByVal"
+idxByVal (x:xs) val = search (x:xs) 0
+  where 
+    search []     idx = error "value not found"
+    search (x:xs) idx = if x == val then idx else search xs (idx + 1)
+
+-- Count an element in the list
+count :: (Eq t) => [t] -> t -> Int
+count []     elem = 0
+count (x:xs) elem = if (x == elem) then (1 + count xs elem) else (count xs elem)
+
+{- Other utility -}
+
+-- Get a list of digits from a number a
+digits :: Int -> Int -> [Int]
+digits a 0      = []
+digits a length = digit : digits (a - (digit * 10 ^ (length - 1))) (length - 1)
+  where digit = a `div` (10 ^ (length - 1))
+
+-- Round up til 6 digits
+round6dp :: Double -> Double
+round6dp x = fromIntegral (round $ x * 1e6) / 1e6
+
+{- Solve method to automate input parsing and result printing -}
 
 -- Run the solve method by providing a description and input type
 solve :: (Show t) => String -> Input -> (Input -> t) -> IO ()

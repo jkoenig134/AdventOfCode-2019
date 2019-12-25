@@ -1,7 +1,6 @@
 package util
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -23,11 +22,9 @@ func StrArrToIntArr(content []string) []int {
 func ReadFile() *string {
 	// use filepath from os args
 	filepath := os.Args[2]
-	fmt.Println(filepath)
 	// read file
 	if file, err := ioutil.ReadFile(filepath); err == nil {
 		str := string(file)
-		fmt.Println(str)
 		return &str
 	} else {
 		return nil
